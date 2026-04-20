@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conferința arAT</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Trocchi|Anton" rel="stylesheet">
+
+  <style>
+/* ─── TOKENS ─── */
+    :root {
+      --purple-brown : #231f20;
+      --egg-shell    : #e8e4d2;
+      --dark-peach   : #e26961;
+      --home-bg      : #1a1a2e;
+      --turquoise    : #5DE3D4;
+      --border-width : .75rem;
+      --dots-gap     : 10px;
+      --nav-h        : 3rem;
+    }
+
+    /* ─── RESET / BASE ─── */
+    *, *:before, *:after { box-sizing: border-box; margin: 0; padding: 0; }
+
+
+
+    body {
+      font-family : Trocchi, Georgia, serif;
+      line-height : 1.6;
+      overflow-x  : hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── 4 BARE FIXE ─── */
+    .border-bar {
+      position       : fixed;
+      z-index        : 100;
+      pointer-events : none;
+      background     : var(--egg-shell);
+      transition     : background .6s;
+      will-change    : transform;
+      transform      : translateZ(0);
+    }
+    .border-bar.top    { top: 0; left: 0; right: 0; height: var(--border-width); }
+    .border-bar.bottom { bottom: 0; left: 0; right: 0; height: var(--border-width); }
+    .border-bar.left   { top: 0; left: 0; bottom: 0; width: var(--border-width); height: 100vh; height: 100lvh;}
+    .border-bar.right  { top: 0; right: 0; bottom: 0; width: var(--border-width); height: 100vh; height: 100lvh;}
+
+    /* ─── NAVIGATION ─── */
+    nav {
+      position   : fixed;
+      top        : var(--border-width);
+      left       : var(--border-width);
+      right      : var(--border-width);
+      z-index    : 99;
+      display    : flex;
+      background : rgba(26, 26, 46, .85);
+      backdrop-filter: blur(8px);
+    }
+
+    nav a {
+      flex             : 1;
+      display          : block;
+      padding          : .7rem 0 .5rem;
+      text-align       : center;
+      text-transform   : uppercase;
+      letter-spacing   : 3px;
+      font-size        : .8rem;
+      color            : var(--egg-shell);
+      transition       : background .3s, color .3s;
+      border-right     : 1px solid rgba(232,228,210,.15);
+    }
+
+    nav a:last-child { border-right: none; }
+
+    nav a:hover                       { background: rgba(226,105,97,.25); }
+    nav a.active                      { background: var(--dark-peach); color: var(--purple-brown); }
+    nav a[href="#projects"].active    { background: var(--egg-shell); color: var(--purple-brown); }
+    nav a[href="#acasa"].active       { background: var(--home-bg); color: var(--egg-shell); border-bottom: 2px solid var(--dark-peach); }
+    nav a[href="#workshopuri"].active { background: var(--turquoise); color: var(--purple-brown); }
+
+    /* ─── NAV: TEXT vs CIFRE ROMANE ─── */
+    nav a .nav-full  { display: inline; }
+    nav a .nav-roman { display: none; }
+
+    @media (max-width: 540px) {
+      nav a {
+        letter-spacing : 0;
+        font-size      : .95rem;
+        font-family    : "Anton", sans-serif;
+        font-weight    : 400;
+        padding        : .75rem 0;
+      }
+
+      nav a .nav-full  { display: none; }
+      nav a .nav-roman { display: inline; }
+    }
+
+    /* ─── SECTIONS ─── */
+    section {
+      min-height       : 100vh;
+      padding          : calc(var(--border-width) + var(--nav-h) + 10vh) var(--border-width) calc(var(--border-width) + 4rem);
+      display          : flex;
+      flex-direction   : column;
+      justify-content  : center;
+      position         : relative;
+      overflow         : hidden;
+    }
+
+    #acasa       { background: var(--home-bg);      color: var(--egg-shell); }
+    #bio         { background: var(--purple-brown); color: var(--egg-shell); }
+    #projects    { background: var(--egg-shell);    color: var(--purple-brown); }
+    #echipa      { background: var(--dark-peach);   color: var(--purple-brown); }
+    #workshopuri { background: var(--turquoise);    color: var(--purple-brown); }
+
+    /* ─── ANIMATED DOTS ─── */
+    .dots:before, .dots:after {
+      content             : "";
+      position            : absolute;
+      top                 : 0;
+      bottom              : 0;
+      width               : 2px;
+      opacity             : .35;
+      background-image    : linear-gradient(var(--dark-peach) 20%, transparent 0);
+      background-size     : 100% var(--dots-gap);
+      animation           : movebg .25s linear infinite;
+      will-change         : transform;
+    }
+
+    .dots:after { animation-direction: reverse; }
+
+    #acasa .dots:before  { left: 18%; }
+    #acasa .dots:after   { left: 82%; }
+
+    #bio .dots:before    { left: 10%; }
+    #bio .dots:after     { right: 10%; }
+    #bio .dots:before,
+    #bio .dots:after     { background-image: linear-gradient(var(--egg-shell) 20%, transparent 0); }
+
+    #projects .dots:before  { left: 8%; }
+    #projects .dots:after   { right: 8%; }
+    #projects .dots:before,
+    #projects .dots:after   { background-image: linear-gradient(var(--purple-brown) 20%, transparent 0); }
+
+    #echipa .dots:before  { left: 12%; }
+    #echipa .dots:after   { right: 12%; }
+    #echipa .dots:before,
+    #echipa .dots:after   { background-image: linear-gradient(var(--egg-shell) 20%, transparent 0); }
+
+    #workshopuri .dots:before  { left: 14%; }
+    #workshopuri .dots:after   { right: 14%; }
+    #workshopuri .dots:before,
+    #workshopuri .dots:after   { background-image: linear-gradient(var(--purple-brown) 20%, transparent 0); }
+
+    @keyframes movebg {
+      from { transform: translate3d(0,0,0); }
+      to   { transform: translate3d(0, var(--dots-gap), 0); }
+    }
+
+    /* ─── HERO H1 ─── */
+    .hero-title {
+      font-family            : "Anton", sans-serif;
+      font-size              : clamp(2.5rem, 8vw, 6rem);
+      font-weight            : 400;
+      line-height            : .9;
+      text-align             : center;
+      margin-bottom          : 2rem;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-image       : url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/74321/tw-o.png"),
+                               url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/74321/tw6-o.png"),
+                               url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/74321/tw5-o.png");
+      background-size        : 45vw auto, 45vw auto, 30vw auto;
+      background-repeat      : repeat-x;
+      transition             : background-position 1s;
+    }
+
+    #acasa .hero-title {
+      background-color    : var(--dark-peach);
+      background-position : 0px 15%, 200px 25%, -50px 5%;
+    }
+
+    #bio .hero-title {
+      background-color    : var(--dark-peach);
+      background-position : -120px 15%, 230px 20%, -100px 3%;
+    }
+
+    #projects .hero-title {
+      background-color    : var(--purple-brown);
+      background-position : -240px 15%, 260px 25%, -150px 1%;
+    }
+
+    #echipa .hero-title {
+      background-color    : var(--purple-brown);
+      background-position : 60px 15%, 180px 30%, -80px 4%;
+    }
+
+    #workshopuri .hero-title {
+      background-color    : var(--purple-brown);
+      background-position : -60px 15%, 210px 20%, -120px 2%;
+    }
+
+    /* ─── CONTENT ─── */
+    .section-content {
+      position   : relative;
+      z-index    : 2;
+      max-width  : 680px;
+      margin     : 0 auto;
+      width      : 100%;
+      text-align : center;
+    }
+
+    .section-content p {
+      font-size    : 1.15rem;
+      line-height  : 1.75;
+      opacity      : .85;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-content p:last-child { margin-bottom: 0; }
+
+    /* ─── PROJECTS GRID ─── */
+    .projects-grid {
+      display               : grid;
+      grid-template-columns : repeat(auto-fit, minmax(200px, 1fr));
+      gap                   : 1.25rem;
+      margin-top            : 1.5rem;
+      text-align            : left;
+    }
+
+    .project-card {
+      background  : var(--purple-brown);
+      color       : var(--egg-shell);
+      padding     : 1.25rem 1.5rem;
+      border-left : 4px solid var(--dark-peach);
+    }
+
+    .project-card h3 {
+      font-family   : "Anton", sans-serif;
+      font-size     : 1.1rem;
+      font-weight   : 400;
+      letter-spacing: 1px;
+      margin-bottom : .5rem;
+      text-transform: uppercase;
+    }
+
+    .project-card p {
+      font-size  : .9rem;
+      opacity    : .75;
+      line-height: 1.6;
+      margin     : 0;
+    }
+
+    #workshopuri .project-card {
+      border-left-color: var(--turquoise);
+    }
+
+    /* ─── FIND ME LINKS ─── */
+    .find-links {
+      display         : flex;
+      flex-wrap       : wrap;
+      justify-content : center;
+      gap             : 1rem;
+      margin-top      : 1.5rem;
+    }
+
+    .find-link {
+      display        : inline-block;
+      padding        : .6rem 1.5rem;
+      border         : 2px solid var(--purple-brown);
+      color          : var(--purple-brown);
+      text-transform : uppercase;
+      letter-spacing : 2px;
+      font-size      : .85rem;
+      transition     : background .25s, color .25s;
+    }
+
+    .find-link:hover {
+      background: var(--purple-brown);
+      color     : var(--egg-shell);
+    }
+
+    /* ─── SCROLL HINTS ─── */
+    .scroll-down,
+    .scroll-up {
+      position : absolute;
+      left     : 50%;
+      z-index  : 2;
+      opacity  : .5;
+    }
+
+    .scroll-down {
+      bottom    : calc(var(--border-width) + 1.5rem);
+      animation : bounce-down .8s ease-in-out infinite alternate;
+    }
+
+    .scroll-up {
+      top       : calc(var(--border-width) + var(--nav-h) + 1rem);
+      animation : bounce-up .8s ease-in-out infinite alternate;
+    }
+
+    .scroll-down svg,
+    .scroll-up svg { width: 28px; height: 28px; }
+
+    @keyframes bounce-down {
+      from { transform: translateX(-50%) translateY(0); }
+      to   { transform: translateX(-50%) translateY(8px); }
+    }
+
+    @keyframes bounce-up {
+      from { transform: translateX(-50%) translateY(0); }
+      to   { transform: translateX(-50%) translateY(-8px); }
+    }
+
+    /* ─── FADE-IN ON SCROLL ─── */
+    .reveal {
+      opacity  : 0;
+      transform: translateY(2.5rem);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+
+    .reveal.visible {
+      opacity  : 1;
+      transform: translateY(0);
+    }
+
+    .scroll-down,
+    .scroll-up {
+      opacity: 1 !important;
+    }
+
+    /* ─── DROPUP ─── */
+    .dropup {
+      position : relative;
+      cursor   : pointer;
+    }
+
+    .dropup-trigger {
+      display        : flex;
+      flex-direction : column;
+      align-items    : flex-start;
+      position       : relative;
+    }
+
+    .dropup-arrow {
+      position  : absolute;
+      top       : 0;
+      right     : 0;
+      font-size : 1.2rem;
+      transition: transform .3s ease;
+      color     : var(--dark-peach);
+    }
+    .dropup.open .dropup-arrow {
+      transform: rotate(180deg);
+    }
+
+    .dropup-menu {
+      position   : absolute;
+      bottom     : 100%;
+      left       : 0;
+      right      : 0;
+      max-height : 0;
+      overflow   : hidden;
+      transition : max-height .35s ease, opacity .35s ease;
+      opacity    : 0;
+      background : var(--purple-brown);
+      border-left: 4px solid var(--dark-peach);
+      padding    : 0 1.5rem;
+    }
+
+    .dropup.open .dropup-menu {
+      max-height : 9999px;
+      opacity    : 1;
+      padding    : .75rem 1.5rem;
+    }
+
+    .dropup-menu ul {
+      list-style : none;
+      margin-top : .75rem;
+      border-top : 1px solid rgba(232,228,210,.2);
+      padding-top: .75rem;
+    }
+
+    .dropup-menu ul li {
+      font-size     : .85rem;
+      opacity       : .8;
+      padding       : .3rem 0;
+      border-bottom : 1px solid rgba(232,228,210,.1);
+      color         : var(--egg-shell);
+    }
+
+    .dropup-menu ul li:last-child {
+      border-bottom: none;
+    }
+    #workshopuri .dropup-arrow {
+      color: var(--turquoise);
+    }
+
+    #workshopuri .dropup-menu {
+      border-left-color: var(--turquoise);
+    }
+
+    /* ─── POPUP MODAL ─── */
+    .popup-overlay {
+      display         : none;
+      position        : fixed;
+      inset           : 0;
+      background      : rgba(35, 31, 32, .75);
+      z-index         : 200;
+      align-items     : center;
+      justify-content : center;
+    }
+
+    .popup-overlay.open {
+      display : flex;
+    }
+
+    .popup-box {
+      background    : var(--purple-brown);
+      color         : var(--egg-shell);
+      border-left   : 4px solid var(--turquoise);
+      padding       : 2rem 2.5rem;
+      max-width     : 500px;
+      width         : 90%;
+      position      : relative;
+    }
+
+    .popup-box h4 {
+      font-family   : "Anton", sans-serif;
+      font-size     : 1.3rem;
+      font-weight   : 400;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom : 1rem;
+      color         : var(--turquoise);
+    }
+
+    .popup-box p {
+      font-size   : 1rem;
+      line-height : 1.75;
+      opacity     : .85;
+    }
+
+    .popup-close {
+      position    : absolute;
+      top         : 1rem;
+      right       : 1.25rem;
+      font-size   : 1.5rem;
+      cursor      : pointer;
+      opacity     : .6;
+      transition  : opacity .2s;
+      background  : none;
+      border      : none;
+      color       : var(--egg-shell);
+      font-family : "Anton", sans-serif;
+    }
+
+    .popup-close:hover { opacity: 1; }
+
+    .dropup-menu li {
+      cursor          : pointer;
+      transition      : opacity .2s, padding-left .2s;
+    }
+
+    .dropup-menu li:hover {
+      opacity      : 1 !important;
+      padding-left : .4rem;
+      color        : var(--turquoise);
+    }
+
+    .sub-dropdown .sub-menu {
+      display: none;
+      padding-left: 12px;
+      margin: 4px 0;
+    }
+
+    .sub-dropdown.open .sub-menu {
+      display: block;
+    }
+
+    .sub-trigger {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+
+    .sub-arrow {
+      font-size: 12px;
+      transition: transform 0.2s;
+    }
+
+    .sub-dropdown.open .sub-arrow {
+      transform: rotate(180deg);
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- ─── 4 BARE FIXE (înlocuiesc body:after) ─── -->
+  <div class="border-bar top"></div>
+  <div class="border-bar bottom"></div>
+  <div class="border-bar left"></div>
+  <div class="border-bar right"></div>
+
+  <!-- NAVIGATION -->
+  <nav>
+    <a href="#acasa">
+      <span class="nav-full">Acasă</span>
+      <span class="nav-roman">I</span>
+    </a>
+    <a href="#bio">
+      <span class="nav-full">Inscriere</span>
+      <span class="nav-roman">II</span>
+    </a>
+    <a href="#projects">
+      <span class="nav-full">Program</span>
+      <span class="nav-roman">III</span>
+    </a>
+    <a href="#echipa">
+      <span class="nav-full">Echipa</span>
+      <span class="nav-roman">IV</span>
+    </a>
+    <a href="#workshopuri">
+      <span class="nav-full">Workshopuri</span>
+      <span class="nav-roman">V</span>
+    </a>
+  </nav>
+
+  <!-- ══════════════════════════════════════
+       ACASĂ
+  ══════════════════════════════════════ -->
+  <section id="acasa">
+    <div class="dots"></div>
+
+    <div class="section-content reveal">
+
+    <h2>
+    <p><span style="font-family: 'Anton', sans-serif; color: var(--dark-peach); font-size: 2em; vertical-align: middle;">×
+      </span>
+    <a href="https://www.arat.ro" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">arAT</a>
+      <span style="font-family: 'Anton', sans-serif; color: var(--dark-peach); font-size: 2em; vertical-align: middle;">×
+      </span>
+    </p>
+    </h2>
+    <br/>
+    <h1 class="hero-title">Acasă</h1>
+    <h2> Comunități: între apartenență, diferențe și loialități</h2>
+    <br/>
+    <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla iaculis maximus aliquet. Pellentesque dapibus auctor dictum. Donec vestibulum lectus ligula. Pellentesque arcu mi, egestas at faucibus sed, fermentum vitae tellus. Pellentesque pellentesque tincidunt felis nec dapibus. Curabitur efficitur, lacus ut maximus rhoncus, arcu nibh varius dui, ut rutrum tortor erat non justo. Ut rhoncus porttitor euismod. In vel faucibus sapien, vel vulputate est.</p>
+
+    </div>
+    <a href="#bio" class="scroll-down">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </a>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       INSCRIERE
+  ══════════════════════════════════════ -->
+  <section id="bio">
+    <div class="dots"></div>
+
+    <a href="#acasa" class="scroll-up">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polyline points="6 15 12 9 18 15"></polyline>
+      </svg>
+    </a>
+
+    <div class="section-content reveal">
+      <h1 class="hero-title">Inscriere</h1>
+      <p>
+        Înscrierea este deschisă pentru toți cei care doresc să facă parte din această
+        experiență unică.
+      </p>
+      <p>
+        Completează formularul de înregistrare cu datele tale și selectează workshopurile
+        la care dorești să participi.
+      </p>
+      <p>Vei primi o confirmare pe email în cel mult 24 de ore.</p>
+
+          <h2><span style="font-family: 'Anton', sans-serif; color: var(--turquoise); font-size: 2em; vertical-align: middle;">×</span>
+    <a href="https://form.jotform.com/conferintaarat2025/xxxa" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">Inscreiere aici</a>
+    <span style="font-family: 'Anton', sans-serif; color: var(--turquoise); font-size: 2em; vertical-align: middle;">×</span>
+    </h2>
+    </div>
+
+    <a href="#projects" class="scroll-down">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </a>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       PROGRAM
+  ══════════════════════════════════════ -->
+  <section id="projects">
+    <div class="dots"></div>
+    <a href="#bio" class="scroll-up" style="color: var(--purple-brown);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polyline points="6 15 12 9 18 15"></polyline>
+      </svg>
+    </a>
+    <div class="section-content reveal">
+      <h1 class="hero-title">Program</h1>
+      <p> Trei zile inspiraționale gândite să maximizeze învățarea și conexiunile dintre participanți.</p>
+      <p>A se folosi în sincron cu mailul de confirmare primit la înscriere.</p>
+      <p>Locatia evenimentelor se poate vizualiza, din lista de mai jos, dacă se dă click pe evenimentul respectiv.</p>
+      </br>
+      <div class="projects-grid">
+
+        <div class="project-card dropup">
+          <div class="dropup-trigger">
+            <h3>Vineri - Ziua I</h3>
+            <span class="dropup-arrow">&#8963;</span>
+          </div>
+          <div class="dropup-menu">
+            <ul>
+              <li data-title="Locația: sala 2" data-desc="observatii">8:30–9:00 - Sosirea participanților</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">09:00-13:00 - a se consulta atelierul selectat</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">09:00-13:00 - a se consulta atelierul selectat</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">09:00-13:00 - a se consulta atelierul selectat</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">09:00-13:00 - a se consulta atelierul selectat</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">14:30-18:30 - </li>
+              <li data-title="Locația: sala 2" data-desc="observatii">14:30-18:30 - </li>
+              <li data-title="Locația: sala 2" data-desc="observatii">14:30-18:30 - </li>
+              <li data-title="Locația: sala 2" data-desc="observatii">14:30-18:30 - </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="project-card dropup">
+          <div class="dropup-trigger">
+            <h3>Sâmbătă - Ziua II</h3>
+            <span class="dropup-arrow">&#8963;</span>
+          </div>
+          <div class="dropup-menu">
+            <ul>
+              <li data-title="Locația: sala 2" data-desc="observatii">8:30–9:00 - Sosirea participanților</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">09:00-09:15 Deschidere eveniment</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">09:15-11:00 Masă rotundă</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">11:30-14:00 - WKSP-ul x</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">11:30-14:00 - WKSP-ul y</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">11:30-14:00 - WKSP-ul z</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">15:30-18:00 - WKSP-ul ales</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="projects-grid">
+
+        <div class="project-card dropup">
+          <div class="dropup-trigger">
+            <h3>Duminică - Ziua III</h3>
+            <span class="dropup-arrow">&#8963;</span>
+          </div>
+          <div class="dropup-menu">
+            <ul>
+              <li data-title="Locația: sala 2" data-desc="observatii">08:30-09:00 - Sosirea participanților</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">09:00-11:00 - WKSP-ul x</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">09:00-11:00 - WKSP-ul x</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">09:00-11:00 - WKSP-ul x</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">09:00-11:00 - WKSP-ul x</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">11:30-13:30 - WKSP-uri la alegere </li>
+              <li data-title="Locația: sala 2" data-desc="observatii">11:30-13:30 - WKSP-uri la alegere </li>
+              <li data-title="Locația: sala 2" data-desc="observatii">11:30-13:30 - WKSP-uri la alegere </li>
+              <li data-title="Locația: sala 2" data-desc="observatii">11:30-13:30 - WKSP-uri la alegere </li>
+              <li data-title="Locația: sala 2" data-desc="observatii">15:00-17:00 - WKSP-uri la alegere</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">17:00-18:00 - Închiderea conferinței</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="project-card dropup">
+          <div class="dropup-trigger">
+            <h3>Luni - Ziua IV</h3>
+            <span class="dropup-arrow">&#8963;</span>
+          </div>
+          <div class="dropup-menu">
+            <ul>
+              <li data-title="Locația: sala 2" data-desc="observatii">8:30–9:00 - Sosirea participanților</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">09:00-13:00 - WKSP I</li>
+              <li data-title="Locația: sala 2" data-desc="observatii">14:30-18:30 - WKSP II</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <a href="#echipa" class="scroll-down" style="color: var(--purple-brown);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </a>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       ECHIPA
+  ══════════════════════════════════════ -->
+  <section id="echipa">
+    <div class="dots"></div>
+
+    <a href="#projects" class="scroll-up">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polyline points="6 15 12 9 18 15"></polyline>
+      </svg>
+    </a>
+
+    <div class="section-content reveal">
+      <h1 class="hero-title">Echipa</h1>
+      <p>
+        În spatele acestui eveniment se află o echipă de profesioniști pasionați, dedicați
+        să creeze o experiență memorabilă pentru fiecare participant în parte.
+      </p>
+      <p>
+        De la organizatori și speakeri la voluntari entuziaști — fiecare contribuie cu
+        energia și expertiza sa pentru ca totul să funcționeze perfect.
+      </p>
+
+<div class="projects-grid">
+
+        <div class="project-card dropup">
+          <div class="dropup-trigger">
+            <h2>A - I</h2>
+            <span class="dropup-arrow">&#8963;</span>
+          </div>
+          <div class="dropup-menu">
+            <ul>
+             <li data-title="Bălescu Bogdan" data-desc="Descriere detaliată pentru al treilea workshop din ziua I.">Bălescu Bogdan</li>
+              <li data-title="Constantin Mădălina" data-desc="Descriere detaliată pentru al doilea workshop din ziua I.">Constantin Mădălina</li>
+              <li data-title="David Anca" data-desc="ceva descriere">David Anca</li>
+              <li data-title="Workshop 3" data-desc="Descriere detaliată pentru al treilea workshop din ziua I.">3. Detaliu 3</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="project-card dropup">
+          <div class="dropup-trigger">
+            <h2>J - R</h2>
+            <span class="dropup-arrow">&#8963;</span>
+          </div>
+          <div class="dropup-menu">
+            <ul>
+              <li data-title="Maftei Alexandra" data-desc="Descriere detaliată pentru al doilea workshop din ziua II.">Maftei Alexandra</li>
+              <li data-title="Martinaș-Gabor Mihai" data-desc="Descriere detaliată pentru al treilea workshop din ziua II.">Martinaș-Gabor Mihai</li>
+              <li data-title="Rus Alina" data-desc="Descriere detaliată pentru primul workshop din ziua II.">Rus Alina</li>
+              <li data-title="Workshop 2" data-desc="Descriere detaliată pentru al doilea workshop din ziua II.">2. Detaliu 2</li>
+              <li data-title="Workshop 3" data-desc="Descriere detaliată pentru al treilea workshop din ziua II.">3. Detaliu 3</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="project-card dropup">
+          <div class="dropup-trigger">
+            <h2>S - Z</h2>
+            <span class="dropup-arrow">&#8963;</span>
+          </div>
+          <div class="dropup-menu">
+            <ul>
+              <li data-title="Tiurean Anca" data-desc="Descriere detaliată pentru primul workshop din ziua III.">Tiurean Anca</li>
+              <li data-title="Workshop 2" data-desc="Descriere detaliată pentru al doilea workshop din ziua III.">2. Detaliu 2</li>
+              <li data-title="Workshop 3" data-desc="Descriere detaliată pentru al treilea workshop din ziua III.">3. Detaliu 3</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <a href="#workshopuri" class="scroll-down">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </a>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       WORKSHOPURI
+  ══════════════════════════════════════ -->
+  <section id="workshopuri">
+    <div class="dots"></div>
+    <a href="#echipa" class="scroll-up" style="color: var(--purple-brown);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polyline points="6 15 12 9 18 15"></polyline>
+      </svg>
+    </a>
+    <div class="section-content reveal">
+      <h1 class="hero-title">Workshopuri</h1>
+      <p>
+        Participă la sesiuni interactive conduse de experți care te vor ghida pas cu pas
+        prin cele mai relevante tehnologii și practici din industrie.
+      </p>
+      <p>
+        Fiecare workshop este gândit pentru implicare directă — vei pleca acasă cu
+        cunoștințe aplicabile.
+      </p>
+      <div class="projects-grid">
+
+        <div class="project-card dropup">
+          <div class="dropup-trigger">
+            <h4>Ziua I</h4>
+            <p>Citeste aici</p>
+            <span class="dropup-arrow">&#8963;</span>
+          </div>
+          <div class="dropup-menu">
+            <ul>
+              <li data-title="Karen Pratt" data-desc="Karen Pratt (TSTA-E), Formator și Supervizor în Analiză Tranzacțională, Educație. Click pentru mai multe detalii despre acest workshop.">1. Karen Pratt (TSTA-E)</li>
+              <li data-title="Workshop 2" data-desc="Descriere detaliată pentru al doilea workshop din ziua I.">2. Detaliu 2</li>
+              <li data-title="Workshop 3" data-desc="Descriere detaliată pentru al treilea workshop din ziua I.">3. Detaliu 3</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="project-card dropup">
+          <div class="dropup-trigger">
+            <h4>Ziua II</h4>
+            <p>Citeste aici</p>
+            <span class="dropup-arrow">&#8963;</span>
+          </div>
+          <div class="dropup-menu">
+            <ul>
+              <li data-title="Workshop 1" data-desc="Descriere detaliată pentru primul workshop din ziua II.">1. Detaliu 1</li>
+              <li data-title="Workshop 2" data-desc="Descriere detaliată pentru al doilea workshop din ziua II.">2. Detaliu 2</li>
+              <li data-title="Workshop 3" data-desc="Descriere detaliată pentru al treilea workshop din ziua II.">3. Detaliu 3</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-content reveal">
+      <div class="projects-grid">
+
+        <div class="project-card dropup">
+          <div class="dropup-trigger">
+            <h4>Ziua III</h4>
+            <p>Citeste aici</p>
+            <span class="dropup-arrow">&#8963;</span>
+          </div>
+          <div class="dropup-menu">
+            <ul>
+              <li data-title="Workshop 1" data-desc="Descriere detaliată pentru primul workshop din ziua III.">1. Detaliu 1</li>
+              <li data-title="Workshop 2" data-desc="Descriere detaliată pentru al doilea workshop din ziua III.">2. Detaliu 2</li>
+              <li data-title="Workshop 3" data-desc="Descriere detaliată pentru al treilea workshop din ziua III.">3. Detaliu 3</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="project-card dropup">
+          <div class="dropup-trigger">
+            <h4>Ziua IV</h4>
+            <p>Citeste aici</p>
+            <span class="dropup-arrow">&#8963;</span>
+          </div>
+          <div class="dropup-menu">
+            <ul>
+              <li data-title="Workshop 1" data-desc="Descriere detaliată pentru primul workshop din ziua IV.">1. Detaliu 1</li>
+              <li data-title="Workshop 2" data-desc="Descriere detaliată pentru al doilea workshop din ziua IV.">2. Detaliu 2</li>
+              <li data-title="Workshop 3" data-desc="Descriere detaliată pentru al treilea workshop din ziua IV.">3. Detaliu 3</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- POPUP MODAL -->
+  <div class="popup-overlay" id="popupOverlay">
+    <div class="popup-box">
+      <button class="popup-close" id="popupClose">✕</button>
+      <h4 id="popupTitle"></h4>
+      <p id="popupDesc"></p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script>
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('nav a');
+    const bars     = document.querySelectorAll('.border-bar');
+
+    const borderColors = {
+      acasa       : '#e8e4d2',
+      bio         : '#e26961',
+      projects    : '#231f20',
+      echipa      : '#231f20',
+      workshopuri : '#e8e4d2',
+    };
+
+    function setBorderColor(color) {
+      bars.forEach(bar => bar.style.background = color);
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          navLinks.forEach(a => {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { threshold: 0.45 });
+
+    sections.forEach(s => observer.observe(s));
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    const borderObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setBorderColor(borderColors[entry.target.id] || '#e8e4d2');
+        }
+      });
+    }, { threshold: 0.5 });
+
+    sections.forEach(s => borderObserver.observe(s));
+
+    // Dropup toggle
+    document.querySelectorAll('.dropup').forEach(card => {
+      card.addEventListener('click', () => {
+        card.classList.toggle('open');
+      });
+    });
+
+    // Popup pentru li-uri
+    const overlay    = document.getElementById('popupOverlay');
+    const popupTitle = document.getElementById('popupTitle');
+    const popupDesc  = document.getElementById('popupDesc');
+    const popupClose = document.getElementById('popupClose');
+
+    document.querySelectorAll('.dropup-menu li').forEach(li => {
+      li.addEventListener('click', (e) => {
+        e.stopPropagation();
+        popupTitle.textContent = li.dataset.title || li.textContent;
+        popupDesc.textContent  = li.dataset.desc  || '';
+        overlay.classList.add('open');
+      });
+    });
+
+    popupClose.addEventListener('click', () => overlay.classList.remove('open'));
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+  </script>
+
+</body>
+</html>
