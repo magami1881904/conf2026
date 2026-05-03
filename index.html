@@ -30,7 +30,7 @@
     /* ─── BARE FIXE ─── */
     .border-bar {
       position       : fixed;
-      z-index        : 200;
+      z-index        : 500;
       pointer-events : none;
       background     : var(--egg-shell);
       transition     : background .6s;
@@ -799,6 +799,10 @@
     window.addEventListener('scroll', throttle(updateActiveLink, 100));
     window.addEventListener('resize', updateActiveLink);
     updateActiveLink();
+
+    window.addEventListener('load', () => {
+      bars.forEach(b => b.style.transition = 'background .6s');
+    });
 
     /* ─── Reveal ─── */
     const revealObs = new IntersectionObserver(entries => {
