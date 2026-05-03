@@ -30,16 +30,15 @@
     /* ─── BARE FIXE ─── */
     .border-bar {
       position       : fixed;
-      z-index        : 500;
+      z-index        : 100;
       pointer-events : none;
       background     : var(--egg-shell);
       transition     : background .6s;
     }
     .border-bar.top    { top: 0; left: 0; right: 0; height: var(--border-width); }
-    .border-bar.bottom { bottom: 0; left: 0; right: 0; height: var(--border-width); }
-    .border-bar.bottom { bottom: 0; left: 0; right: 0; height: var(--border-width); z-index: 201; }
-    .border-bar.left   { top: 0; left: 0; bottom: 0; width: var(--border-width); }
-    .border-bar.right  { top: 0; right: 0; bottom: 0; width: var(--border-width); }
+    .border-bar.bottom { bottom: 0; left: 0; right: 0; height: var(--border-width);}
+    .border-bar.left   { top: 0; left: 0; bottom: 0; width: var(--border-width); height: 100vh; height: 100dvh;}
+    .border-bar.right  { top: 0; right: 0; bottom: 0; width: var(--border-width); height: 100vh; height: 100dvh;}
 
     /* ─── NAVIGAȚIE ─── */
     nav {
